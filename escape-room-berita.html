@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escape Room Berita</title>
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--ink:#1f2430;--mut:#5b6475;--acc:#b4452c;--ok:#1f7a4d;--bad:#b3261e;--line:#ddd6c8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171f;--card:#1d212c;--ink:#eceff4;--mut:#9aa3b5;--acc:#f08a6b;--ok:#5fd39a;--bad:#ff8a80;--line:#2e3443;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171f;--card:#1d212c;--ink:#eceff4;--mut:#9aa3b5;--acc:#f08a6b;--ok:#5fd39a;--bad:#ff8a80;--line:#2e3443;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:.2em 0}
+h2{font-size:1.2rem;margin:.2em 0}
+.sub{color:var(--mut);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.bar{display:flex;gap:8px;align-items:center;margin:8px 0 4px;overflow-x:auto}
+.step{flex:1;min-width:54px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:6px 4px;font:600 .8rem system-ui,sans-serif;background:var(--card);color:var(--mut)}
+.step.on{border-color:var(--acc);color:var(--acc)}
+.step.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.meta{display:flex;justify-content:space-between;font:.85rem system-ui,sans-serif;color:var(--mut)}
+.code{font:700 1.5rem ui-monospace,Menlo,monospace;letter-spacing:.3em;color:var(--acc)}
+.q{font-size:1.05rem;margin:0 0 12px}
+button{font:600 1rem system-ui,sans-serif;cursor:pointer}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--card))}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,var(--card))}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:11px 18px;margin-top:8px}
+.btn.alt{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+.fb{min-height:1.5em;margin:8px 0 0;font:.95rem system-ui,sans-serif}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+input{font:700 1.6rem ui-monospace,Menlo,monospace;letter-spacing:.4em;text-align:center;width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+ol{padding-left:1.2em;margin:.4em 0}
+.box{font-size:3rem;text-align:center}
+.chip{display:inline-block;margin:4px 6px 4px 0;padding:8px 14px;border:1.5px solid var(--acc);border-radius:999px;background:var(--card);color:var(--acc)}.chip:disabled{opacity:.35}.line{min-height:48px;padding:10px 12px;border:1.5px dashed var(--line);border-radius:10px;margin:8px 0;font-weight:700}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const P=[
+{n:"Pos 1",t:"Ruang Redaksi",s:"Konjungsi",w:"Warga",intro:"Naskah berita di meja redaksi berantakan. Pilih konjungsi dengan cermat untuk mendapat potongan kunci pertama.",
+q:[{t:"Manakah kalimat berita yang penggunaan konjungsinya paling tepat?",o:["Walaupun hujan deras, sehingga pertandingan tetap digelar.","Harga beras naik karena pasokan dari petani berkurang akibat gagal panen.","Pemerintah menambah anggaran, tetapi dan program berjalan lancar.","Banjir surut, sedangkan warga mulai membersihkan rumah."],a:1,h:"Periksa hubungan makna antarklausa dan hindari konjungsi yang dobel atau bertabrakan."},
+{t:"“Setelah diperiksa polisi, sopir itu ditahan karena terbukti mengemudi dalam keadaan mabuk.”\nHubungan makna yang dinyatakan konjungsi setelah dan karena secara berurutan adalah ....",o:["syarat dan akibat","waktu dan tujuan","waktu dan sebab","pertentangan dan sebab"],a:2,h:"Setelah menunjukkan urutan kejadian, karena menunjukkan alasan."}]},
+{n:"Pos 2",t:"Meja Wawancara",s:"Kalimat langsung/tidak langsung",w:"Jembatan",intro:"Hasil wawancara harus ditulis ulang dengan benar. Perhatikan kata ganti, keterangan waktu, dan tanda baca.",
+q:[{t:"Ubah ke kalimat tidak langsung:\nDirektur menjelaskan, “Kami akan menutup pabrik ini bulan depan jika izin tidak diperpanjang.”",o:["Direktur menjelaskan bahwa kami akan menutup pabrik ini bulan depan jika izin tidak diperpanjang.","Direktur menjelaskan bahwa pihaknya akan menutup pabrik ini bulan depan jika izin tidak diperpanjang.","Direktur menjelaskan bahwa pihaknya akan menutup pabrik itu bulan berikutnya jika izin tidak diperpanjang.","Direktur menjelaskan, pihaknya akan menutup pabrik itu bulan berikutnya jika izin tidak diperpanjang."],a:2,h:"Kata ganti, kata tunjuk, dan keterangan waktu berubah, serta ada kata bahwa."},
+{t:"Ubah ke kalimat langsung:\nMenteri menanyakan apakah data korban sudah diverifikasi.",o:["Menteri bertanya, “Apakah data korban sudah diverifikasi.”","Menteri bertanya, “Apakah data korban sudah diverifikasi?”","Menteri bertanya, “Data korban sudah diverifikasi?”","Menteri bertanya apakah, “data korban sudah diverifikasi?”"],a:1,h:"Kalimat tanya langsung memakai tanda tanya di dalam tanda petik."}]},
+{n:"Pos 3",t:"Ruang Editor",s:"Struktur & 5W+1H",w:"Terpaksa Memutar",intro:"Editor menuntut struktur berita yang benar. Analisis dua kutipan berikut.",
+q:[{t:"“Seorang pengendara tewas setelah motornya terjun ke sungai di Jalan Raya Tuban–Semarang, Selasa (13/10) malam, akibat jalan licin.”\nUnsur mengapa (why) ditunjukkan oleh ....",o:["Seorang pengendara","terjun ke sungai","akibat jalan licin","Selasa (13/10) malam"],a:2,h:"Mengapa = sebab terjadinya peristiwa."},
+{t:"“Polisi masih menyelidiki penyebab pasti kecelakaan dan mengimbau pengendara berhati-hati saat hujan.”\nKalimat ini paling tepat berada pada bagian ....",o:["kepala berita","teras berita","tubuh berita","ekor berita"],a:3,h:"Berisi tindak lanjut dan harapan di akhir berita."}]},
+{n:"Pos 4",t:"Meja Verifikasi",s:"Kebahasaan & hoaks",w:"Ambruk",intro:"Pos terakhir: periksa kebahasaan dan keaslian informasi.",
+q:[{t:"“Tim SAR berhasil mengevakuasi korban yang terjebak di reruntuhan.”\nKata mengevakuasi termasuk ....",o:["verba intransitif","verba transitif aktif","adjektiva","konjungsi"],a:1,h:"Verba ini berimbuhan me-kan/-i dan memerlukan objek (korban)."},
+{t:"Pesan beredar: “BREAKING!!! Besok SEMUA sekolah libur 2 minggu!! Sebarkan sebelum dihapus! (katanya dari orang dalam)”\nLangkah verifikasi paling tepat adalah ....",o:["Segera menyebarkannya ke grup agar yang lain tahu","Mempercayainya karena banyak yang membagikan","Mengeceknya di situs resmi dinas pendidikan dan media tepercaya","Menunggu teman lain memastikannya"],a:2,h:"Informasi harus dicek ke sumber resmi sebelum disebarkan."}]}
+];
+const ORDER=[1,3,0,2],HEAD="Jembatan Ambruk, Warga Terpaksa Memutar";
+let st=-1,qi=0,got=[],sec=0,tm=null,locked=false,pick2=[];
+const $=s=>document.querySelector(s),app=$("#app");
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+function bar(){return '<div class="bar">'+P.map((p,i)=>'<div class="step '+(i<st?"done":i===st?"on":"")+'">'+(i<st?"✓ ":"")+p.n+'</div>').join("")+'<div class="step '+(st>=4?"on":"")+'">Kotak</div></div><div class="meta"><span>Potongan: <b>'+P.map((p,i)=>got[i]||"•").join(" · ")+'</b></span><span id="tm">⏱ '+fmt(sec)+'</span></div>';}
+function start(){st=0;qi=0;got=[];sec=0;clearInterval(tm);tm=setInterval(()=>{sec++;const e=$("#tm");if(e)e.textContent="⏱ "+fmt(sec)},1000);render()}
+function intro(){app.innerHTML='<h1>🔐 Escape Room Berita</h1><p class="sub">Kelas XI · Teks Berita</p><div class="card"><p>Kamu terjebak di <b>Ruang Redaksi</b> menjelang tenggat. Kotak arsip rahasia hanya terbuka jika kamu menyusun <b>kepala berita</b> yang benar. Setiap pos menyimpan satu <b>potongan kalimat</b>, dan potongan itu baru muncul jika dua teka-teki dijawab dengan benar.</p><ol><li>Selesaikan Pos 1 sampai 4 dan kumpulkan potongannya.</li><li>Potongan tidak berurutan, jadi susun sendiri menjadi kepala berita yang logis.</li><li>Susun kepala berita di kotak terakhir.</li></ol><p class="sub">Tips: kerjakan berkelompok, lalu adu cepat dengan kelompok lain.</p></div><button class="btn" id="go">Mulai Permainan</button>';$("#go").onclick=start}
+function render(){
+if(st>=4)return final();
+const p=P[st],q=p.q[qi];locked=false;
+app.innerHTML='<h1>🔐 Escape Room Berita</h1>'+bar()+'<div class="card"><h2>'+p.n+': '+p.t+'</h2><p class="sub">'+p.s+(qi===0?' — '+p.intro:'')+'</p><p class="q">Soal '+(qi+1)+'/2<br>'+q.t.replace(/\n/g,"<br>")+'</p><div id="opts"></div><p class="fb" id="fb"></p><button class="btn alt" id="hint">💡 Petunjuk</button> <button class="btn" id="next" style="display:none"></button></div>';
+q.o.forEach((o,i)=>{const b=document.createElement("button");b.className="opt";b.textContent=o;b.onclick=()=>pick(b,i,q);$("#opts").appendChild(b)});
+$("#hint").onclick=()=>{$("#fb").className="fb";$("#fb").textContent="💡 "+q.h};
+}
+function pick(b,i,q){
+if(locked)return;const fb=$("#fb");
+if(i===q.a){locked=true;b.classList.add("ok");fb.className="fb ok";document.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+const last=qi===1;fb.textContent=last?"✅ Benar! Potongan kunci pos ini: “"+P[st].w+"”":"✅ Benar!";
+const n=$("#next");n.style.display="inline-block";n.textContent=last?(st===3?"Menuju kotak terakhir →":"Pos berikutnya →"):"Soal berikutnya →";
+n.onclick=()=>{if(last){got[st]=P[st].w;st++;qi=0}else qi++;render()};}
+else{b.classList.add("bad");b.disabled=true;fb.className="fb bad";fb.textContent="❌ Belum tepat, coba lagi. Pakai petunjuk jika perlu.";b.classList.add("shake")}
+}
+function final(){
+pick2=[];
+app.innerHTML='<h1>🔐 Escape Room Berita</h1>'+bar()+'<div class="card"><div class="box">🧰</div><h2 style="text-align:center">Kotak Arsip Rahasia</h2><p class="sub" style="text-align:center">Susun potongan menjadi satu kepala berita yang logis: peristiwa lebih dulu, lalu dampaknya.</p><div id="chips"></div><div class="line" id="ln"></div><p class="fb" id="fb" style="text-align:center"></p><div style="text-align:center"><button class="btn alt" id="rs">Ulangi</button> <button class="btn" id="open">Buka Kotak</button></div></div>';
+const ch=$("#chips");[2,0,3,1].forEach(i=>{const b=document.createElement("button");b.className="chip";b.textContent=got[i];b.onclick=()=>{pick2.push(i);b.disabled=true;ln()};ch.appendChild(b)});
+function ln(){$("#ln").textContent=pick2.map(i=>got[i]).join(" ")}
+$("#rs").onclick=()=>{pick2=[];document.querySelectorAll(".chip").forEach(c=>c.disabled=false);ln();$("#fb").textContent=""};
+$("#open").onclick=()=>{
+if(pick2.join()===ORDER.join()){clearInterval(tm);app.innerHTML='<div class="card" style="text-align:center"><div class="box">🎉</div><h1>Kalian Berhasil Keluar!</h1><p>Kepala berita edisi besok siap terbit:</p><h2 style="color:var(--acc)">'+HEAD+'</h2><p>Waktu: <b>'+fmt(sec)+'</b></p><p class="sub">Catat waktumu dan tantang kelompok lain!</p><button class="btn" id="again">Main Lagi</button></div>';$("#again").onclick=intro}
+else{const f=$("#fb");f.className="fb bad shake";f.textContent="Susunan belum logis. Pikirkan peristiwa utama dan dampaknya.";setTimeout(()=>f.classList.remove("shake"),400)}}
+}
+intro();
+</script>
+</body>
+</html>
